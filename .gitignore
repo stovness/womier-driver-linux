@@ -1,0 +1,22 @@
+# vendor files, copied from the user's own install by scripts/install.sh
+dist/
+company/
+APPVersion.json
+CurrentCompany.json
+
+# installed dependencies and build output
+node_modules/
+package-lock.json
+
+# build working directories (scripts in build/ are tracked)
+build/cache/
+build/deb-root/
+build/arch-root/
+build/AppDir/
+build/rpm/
+build/*.log
+
+release/
+
+# local logs
+*.log
