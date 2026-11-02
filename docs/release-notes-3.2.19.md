@@ -13,8 +13,8 @@ Tested on the WOMIER SK75 TMR (USB `3151:5030`).
 - `womier-driver-3.2.19-1.x86_64.rpm` for Fedora, Nobara, Bazzite, RHEL
 - `womier-driver-3.2.19-x86_64.AppImage` for any other distribution
 
-Not sure which one? The [README](../README.md) has a one-line chooser, and each
-format has a step-by-step guide in [docs/](docs/).
+Not sure which one? The [README](https://github.com/stovness/womier-driver-linux/blob/main/README.md) has a one-line chooser, and each
+format has a step-by-step guide in [docs/](https://github.com/stovness/womier-driver-linux/tree/main/docs).
 
 ## First run
 
@@ -51,5 +51,5 @@ Attached to this release as `SHA256SUMS`, one line per file.
 
 ## Support
 
-[Troubleshooting](docs/troubleshooting.md), and the log at
+[Troubleshooting](https://github.com/stovness/womier-driver-linux/blob/main/docs/troubleshooting.md), and the log at
 `~/.cache/womier-driver.log`.
