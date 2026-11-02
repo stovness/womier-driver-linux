@@ -5,7 +5,7 @@ if you prefer not to install a package.
 
 ## 1. Download
 
-From the [Releases page](../releases/latest):
+From the [Releases page](https://github.com/stovness/womier-driver-linux/releases/latest):
 
 ```
 womier-driver-3.2.19-x86_64.AppImage

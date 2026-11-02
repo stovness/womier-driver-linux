@@ -18,7 +18,7 @@ Tested with the **WOMIER SK75 TMR** (USB `3151:5030`).
 | Fedora, Bazzite, Nobara, RHEL | `.rpm` | [Fedora](docs/install-fedora.md) |
 | Anything else | `.AppImage` | [AppImage](docs/install-appimage.md) |
 
-All files are on the [Releases page](releases/latest).
+All files are on the [Releases page](https://github.com/stovness/womier-driver-linux/releases/latest).
 
 ## What happens on first run
 

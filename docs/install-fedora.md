@@ -5,7 +5,7 @@ image-based ("atomic").
 
 ## 1. Download
 
-From the [Releases page](../releases/latest):
+From the [Releases page](https://github.com/stovness/womier-driver-linux/releases/latest):
 
 ```
 womier-driver-3.2.19-1.x86_64.rpm

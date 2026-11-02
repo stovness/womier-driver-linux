@@ -5,7 +5,7 @@ permission rule. You do not need Node, npm or any terminal commands.
 
 ## 1. Download
 
-Open the [Releases page](../releases/latest) and download:
+Open the [Releases page](https://github.com/stovness/womier-driver-linux/releases/latest) and download:
 
 ```
 womier-driver_3.2.19-1_amd64.deb

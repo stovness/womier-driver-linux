@@ -5,7 +5,7 @@ local `.deb` files, so the terminal command below is the reliable route.
 
 ## 1. Download
 
-From the [Releases page](../releases/latest):
+From the [Releases page](https://github.com/stovness/womier-driver-linux/releases/latest):
 
 ```
 womier-driver_3.2.19-1_amd64.deb
