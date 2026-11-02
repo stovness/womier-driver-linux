@@ -8,6 +8,8 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 "$HERE/build-rpm.sh"
 "$HERE/build-appimage.sh"
 
+( cd "$HERE/../release" && sha256sum *.deb *.rpm *.zst *.AppImage > SHA256SUMS )
+
 echo
 echo "artifacts:"
 ls -lh "$HERE/../release" | sed '1d'
