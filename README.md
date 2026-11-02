@@ -4,6 +4,8 @@ Run the official WOMIER keyboard software on Linux: key remapping, lighting,
 magnetic switch settings, rapid trigger and profiles, using the vendor's own
 interface.
 
+Unofficial community port. Not affiliated with WOMIER.
+
 Tested with the **WOMIER SK75 TMR** (USB `3151:5030`).
 
 ## Which file do I need?
