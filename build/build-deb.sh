@@ -26,7 +26,13 @@ mkdir -p "$ROOT/DEBIAN" \
   "$ROOT/usr/bin" \
   "$ROOT/usr/share/applications" \
   "$ROOT/usr/share/icons/hicolor/512x512/apps" \
+  "$ROOT/usr/lib/udev/rules.d" \
   "$ROOT/usr/share/doc/$PKG"
+
+cat > "$ROOT/usr/lib/udev/rules.d/60-womier.rules" << 'RULE'
+# WOMIER SK75 TMR
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="3151", ATTRS{idProduct}=="5030", MODE="0660", TAG+="uaccess"
+RULE
 
 echo "== electron $ELECTRON_VERSION"
 ZIP="$CACHE/electron-v$ELECTRON_VERSION-linux-x64.zip"
@@ -44,11 +50,13 @@ cp -a "$HERE/main.js" "$HERE/iot-service.js" "$HERE/preload-diag.js" "$HERE/setu
 cp -a "$HERE/scripts/patch-app.js" "$ROOT/opt/$PKG/scripts/"
 
 echo "== dependencies"
-# Only @electron/remote is needed at runtime. Dropping devDependencies keeps
-# npm from installing a second copy of Electron inside the package.
+# Only @electron/remote is needed at runtime. --omit=peer matters: npm would
+# otherwise install Electron itself (a peer of @electron/remote), and its
+# extract-zip tree ships native modules for ARM and musl, which rpmbuild then
+# records as requirements.
 ( cd "$ROOT/opt/$PKG" \
   && node -e "const fs=require('fs');const p=require('./package.json');delete p.devDependencies;fs.writeFileSync('package.json',JSON.stringify(p,null,2))" \
-  && npm install --omit=dev --no-audit --no-fund > /dev/null \
+  && npm install --omit=dev --omit=peer --no-audit --no-fund > /dev/null \
   && rm -rf node_modules/electron node_modules/.bin/electron )
 
 echo "== launcher"
@@ -95,7 +103,7 @@ Priority: optional
 Architecture: amd64
 Installed-Size: $INSTALLED_SIZE
 Maintainer: Steven <stov@stov.uk>
-Depends: p7zip-full, libgtk-3-0, libnss3, libnspr4, libatk1.0-0, libatk-bridge2.0-0, libcups2, libdrm2, libxkbcommon0, libxcomposite1, libxdamage1, libxfixes3, libxrandr2, libgbm1, libpango-1.0-0, libcairo2, libasound2, libatspi2.0-0, libx11-xcb1, libxcb-dri3-0, libsecret-1-0, libnotify4, libxtst6
+Depends: p7zip-full, libgtk-3-0t64 | libgtk-3-0, libnss3, libnspr4, libatk1.0-0t64 | libatk1.0-0, libatk-bridge2.0-0t64 | libatk-bridge2.0-0, libcups2t64 | libcups2, libdrm2, libxkbcommon0, libxcomposite1, libxdamage1, libxfixes3, libxrandr2, libgbm1, libpango-1.0-0t64 | libpango-1.0-0, libcairo2, libasound2t64 | libasound2, libatspi2.0-0t64 | libatspi2.0-0, libx11-xcb1, libxcb-dri3-0, libsecret-1-0, libnotify4, libxtst6
 Description: WOMIER Driver for Linux
  Runs the official WOMIER keyboard software on Linux.
  .
@@ -111,11 +119,6 @@ echo "== scripts"
 cat > "$ROOT/DEBIAN/postinst" << 'EOF'
 #!/bin/sh
 set -e
-
-cat > /etc/udev/rules.d/60-womier.rules << 'RULE'
-# WOMIER SK75 TMR
-SUBSYSTEM=="hidraw", ATTRS{idVendor}=="3151", ATTRS{idProduct}=="5030", MODE="0660", TAG+="uaccess"
-RULE
 
 if command -v udevadm > /dev/null; then
   udevadm control --reload-rules || true
@@ -137,7 +140,6 @@ cat > "$ROOT/DEBIAN/postrm" << 'EOF'
 set -e
 
 if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
-  rm -f /etc/udev/rules.d/60-womier.rules
   if command -v udevadm > /dev/null; then
     udevadm control --reload-rules || true
     udevadm trigger --subsystem-match=hidraw || true
