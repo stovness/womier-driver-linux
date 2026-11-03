@@ -6,7 +6,8 @@ interface.
 
 Unofficial community port. Not affiliated with WOMIER.
 
-Tested with the **WOMIER SK75 TMR** (USB `3151:5030`).
+Tested with the **WOMIER SK75 TMR** (USB `3151:5030`) on Ubuntu 24.04, Debian 12,
+Fedora 45 and Arch Linux. The AppImage was tested on Ubuntu 24.04.
 
 ## Which file do I need?
 

@@ -81,7 +81,7 @@ function sevenZip() {
       // try the next one
     }
   }
-  throw new Error('7-Zip is not installed (package p7zip-full)')
+  throw new Error('7-Zip is not installed (package p7zip-full, p7zip or 7zip)')
 }
 
 function run(command, args, options = {}) {

@@ -45,6 +45,22 @@ screen-capture lighting show an error instead of pretending to work.
 - X11 or Wayland
 - A USB cable for the first setup
 
+## Tested on
+
+- Ubuntu 24.04, `.deb`
+- Debian 12, `.deb`
+- Fedora 45, `.rpm`
+- Arch Linux, `.pkg.tar.zst`
+- Ubuntu 24.04, `.AppImage`
+
+Every format installs, completes the first-run setup, downloads and patches the
+vendor application, and opens the keyboard settings with no errors.
+
+Packaging was refreshed on 3 November 2026: the `.deb` now asks for the t64
+package names on Ubuntu 24.04 (apt used to pick an incompatible OSS4 ALSA
+shim), and the `.rpm` depends on `/usr/bin/7z`, so it installs on Fedora 41 and
+newer where 7-Zip is packaged as `7zip`.
+
 ## Checksums
 
 Attached to this release as `SHA256SUMS`, one line per file.

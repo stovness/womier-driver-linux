@@ -29,7 +29,7 @@ License:        Proprietary
 URL:            https://github.com/
 Source0:        womier-payload.tar.gz
 BuildArch:      x86_64
-Requires:       p7zip
+Requires:       /usr/bin/7z
 
 %description
 Runs the official WOMIER keyboard software on Linux.
