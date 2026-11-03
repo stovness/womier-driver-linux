@@ -15,6 +15,9 @@ PKG="$(readlink -f "$PKG")"
 INST="$(readlink -f "$INST")"
 BASE="$(basename "$PKG")"
 
+[ -f "$PKG" ] || { echo "no package at $PKG"; exit 1; }
+[ -f "$INST" ] || { echo "no installer at $INST (set WOMIER_INSTALLER)"; exit 1; }
+
 cleanup() { docker rm -f "$NAME" > /dev/null 2>&1; }
 trap cleanup EXIT
 cleanup
@@ -54,6 +57,12 @@ if [ "$MODE" = full ]; then
     L=~/.cache/womier-driver.log
     echo -n "  setup: "; grep -a "setup:" $L 2>/dev/null | tail -1 | sed "s/.*message/ message/"
     echo -n "  renderer: "; grep -a "renderer loaded" $L 2>/dev/null | tail -1 || echo "not reached"
-    echo -n "  errors: "; grep -acE "install failed|UNHANDLED|FAILED" $L 2>/dev/null
+    echo -n "  errors: "; grep -acE "install failed|UNHANDLED|FAILED" $L 2>/dev/null || true
+    if grep -qa "\"phase\":\"done\"" $L 2>/dev/null && grep -qa "renderer loaded" $L 2>/dev/null && ! grep -qaE "install failed|UNHANDLED|FAILED" $L 2>/dev/null; then
+      echo "  RESULT: PASS"
+    else
+      echo "  RESULT: FAIL"
+      exit 1
+    fi
   '
 fi
