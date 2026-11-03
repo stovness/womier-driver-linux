@@ -102,7 +102,7 @@ To run against an existing vendor installation without packaging:
 
 ```sh
 ./scripts/install.sh ~/Downloads/WOMIER_setup_3.2.19_WIN20260513.exe
-~/womier-linux/scripts/launch.sh
+./scripts/launch.sh
 ```
 
 Set `WOMIER_APP_DIR` to install somewhere else. Run with `WOMIER_DIAG=1` to log
