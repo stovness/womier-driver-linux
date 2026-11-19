@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WOMIER Driver setup</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #121212;
+        --panel: #1c1c1c;
+        --text: #f2f2f2;
+        --muted: #9a9a9a;
+        --accent: #e6003e;
+        --ok: #2ecc71;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-user-select: none;
+      }
+      .drag { position: fixed; inset: 0 0 auto 0; height: 56px; -webkit-app-region: drag; }
+      .close {
+        position: fixed; top: 14px; right: 16px; z-index: 5;
+        width: 32px; height: 32px; border-radius: 8px; border: 0;
+        background: transparent; color: var(--muted); font-size: 20px;
+        cursor: pointer; -webkit-app-region: no-drag;
+      }
+      .close:hover { background: #262626; color: var(--text); }
+      main { width: 720px; max-width: calc(100vw - 64px); padding: 24px; }
+      .brand { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+      h1 { font-size: 34px; line-height: 1.15; margin: 0 0 14px; font-weight: 600; }
+      p { font-size: 16px; line-height: 1.6; color: var(--muted); margin: 0 0 12px; }
+      .panel { background: var(--panel); border-radius: 14px; padding: 26px 28px; margin-top: 26px; }
+      .steps { display: grid; gap: 10px; margin: 0 0 22px; padding: 0; list-style: none; }
+      .steps li { display: flex; gap: 12px; font-size: 15px; color: var(--text); }
+      .steps b { color: var(--muted); font-weight: 500; min-width: 18px; }
+      button.primary {
+        appearance: none; border: 0; border-radius: 10px;
+        background: var(--accent); color: #fff;
+        font-size: 16px; font-weight: 600; padding: 14px 26px;
+        cursor: pointer; min-width: 220px;
+      }
+      button.primary:disabled { opacity: 0.55; cursor: default; }
+      button.ghost {
+        appearance: none; border: 1px solid #333; border-radius: 10px;
+        background: transparent; color: var(--muted);
+        font-size: 14px; padding: 12px 18px; cursor: pointer; margin-left: 10px;
+      }
+      button.ghost:hover { color: var(--text); border-color: #444; }
+      .bar { height: 8px; border-radius: 99px; background: #2a2a2a; overflow: hidden; margin: 18px 0 12px; }
+      .bar > span { display: block; height: 100%; width: 0%; background: var(--accent); transition: width 0.25s ease; }
+      .status { font-size: 14px; color: var(--muted); min-height: 20px; }
+      .error {
+        display: none; margin-top: 18px; padding: 14px 16px; border-radius: 10px;
+        background: #2a1416; border: 1px solid #5a1d24; color: #ffb3bd; font-size: 14px; line-height: 1.5;
+      }
+      .error.show { display: block; }
+      .hint { font-size: 13px; color: #6f6f6f; margin-top: 18px; }
+      button.link {
+        background: none; border: 0; padding: 0; margin-left: 4px;
+        color: #ff5470; font-size: 13px; cursor: pointer; text-decoration: underline;
+      }
+      button.link:disabled { color: var(--muted); text-decoration: none; cursor: default; }
+      .done { display: none; }
+      .done.show { display: block; }
+    </style>
+  </head>
+  <body>
+    <div class="drag"></div>
+    <button class="close" id="close" title="Close">×</button>
+
+    <main>
+      <div class="brand">WOMIER Driver</div>
+      <h1>Set up your keyboard software</h1>
+      <p>This one-time setup downloads the official WOMIER driver, unpacks it and makes it run on Linux. It takes a few minutes on a normal connection.</p>
+
+      <div class="panel" id="panel">
+        <ul class="steps">
+          <li><b>1</b><span>Download the official driver from WOMIER (about 100 MB)</span></li>
+          <li><b>2</b><span>Unpack it and prepare it for Linux</span></li>
+          <li><b>3</b><span>Plug in your keyboard and start</span></li>
+        </ul>
+
+        <div id="actions">
+          <button class="primary" id="install">Install driver</button>
+          <button class="ghost" id="pick">I already have the installer</button>
+        </div>
+
+        <div id="progress" style="display: none">
+          <div class="bar"><span id="fill"></span></div>
+          <div class="status" id="status">Starting…</div>
+        </div>
+
+        <div class="done" id="done">
+          <p style="color: var(--text); margin-bottom: 0">Driver installed. Opening the keyboard settings…</p>
+        </div>
+
+        <div class="error" id="error"></div>
+        <div class="hint">You need your keyboard connected by USB for the setup to finish. Wireless works afterwards.</div>
+        <div class="hint" id="permrow">
+          Keyboard not detected afterwards?
+          <button class="link" id="perm">Allow keyboard access</button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const { ipcRenderer } = window.require('electron')
+
+      const installButton = document.getElementById('install')
+      const pickButton = document.getElementById('pick')
+      const actions = document.getElementById('actions')
+      const progress = document.getElementById('progress')
+      const fill = document.getElementById('fill')
+      const status = document.getElementById('status')
+      const errorBox = document.getElementById('error')
+      const done = document.getElementById('done')
+
+      document.getElementById('close').addEventListener('click', () => ipcRenderer.invoke('setup:quit'))
+
+      ipcRenderer.on('setup:status', (event, state) => {
+        if (state.phase === 'error') {
+          showError(state.message)
+          return
+        }
+        progress.style.display = 'block'
+        fill.style.width = `${state.percent || 0}%`
+        status.textContent = state.message || ''
+        if (state.phase === 'done') {
+          progress.style.display = 'none'
+          done.classList.add('show')
+        }
+      })
+
+      function begin() {
+        errorBox.classList.remove('show')
+        actions.style.display = 'none'
+        progress.style.display = 'block'
+        fill.style.width = '0%'
+        status.textContent = 'Starting…'
+        installButton.disabled = true
+        ipcRenderer.invoke('setup:install').then((result) => {
+          if (!result.ok) showError(result.error || 'Setup failed')
+        })
+      }
+
+      function showError(message) {
+        installButton.disabled = false
+        actions.style.display = 'block'
+        progress.style.display = 'none'
+        errorBox.textContent = message
+        errorBox.classList.add('show')
+        pickButton.textContent = 'Choose installer file'
+      }
+
+      installButton.addEventListener('click', begin)
+      document.getElementById('perm').addEventListener('click', async () => {
+        const button = document.getElementById('perm')
+        button.disabled = true
+        button.textContent = 'Waiting for your password…'
+        const result = await ipcRenderer.invoke('setup:permissions')
+        button.textContent = result.ok ? 'Keyboard access allowed' : 'Could not change permissions'
+      })
+      pickButton.addEventListener('click', () => {
+        errorBox.classList.remove('show')
+        actions.style.display = 'none'
+        progress.style.display = 'block'
+        status.textContent = 'Waiting for the installer file…'
+        ipcRenderer.invoke('setup:pick').then((result) => {
+          if (result.cancelled) {
+            actions.style.display = 'block'
+            progress.style.display = 'none'
+            return
+          }
+          if (!result.ok) showError(result.error || 'Setup failed')
+        })
+      })
+    </script>
+  </body>
+</html>

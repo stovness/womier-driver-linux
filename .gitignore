@@ -1,0 +1,13 @@
+# vendor files, copied from the user's own install by the setup window
+dist/
+company/
+APPVersion.json
+CurrentCompany.json
+
+# installed dependencies
+node_modules/
+package-lock.json
+
+# local logs
+*.log
+release/
